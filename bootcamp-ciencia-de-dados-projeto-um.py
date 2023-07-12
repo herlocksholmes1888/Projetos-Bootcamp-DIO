@@ -37,3 +37,4 @@ while True:
         break
     else:
         print("Opção inválida. Por favor, tente novamente.")
+        
