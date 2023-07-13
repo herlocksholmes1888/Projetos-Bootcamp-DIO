@@ -3,6 +3,7 @@ import random
 menu = """
 [nu] Novo usuário
 [nc] Nova conta
+[lc] Listar contas
 [1] Depositar
 [2] Sacar
 [3] Visualizar extrato
@@ -35,15 +36,25 @@ def criar_usuario(usuarios):
         print("Usuário criado com sucesso!")
 
 def criar_conta(usuarios, contas):
-    cpf = input("Informe seu CPF (somente número): ")
+    cpf = input("Informe o CPF do usuário: ")
     usuario = filtrar_usuario(cpf, usuarios)
 
-    if usuario:
-        numero_conta = random.random()
-        contas.append(["0001", numero_conta])
-        print("Conta criada com sucesso!")
-    else:
+    if not usuario:
+        print("Usuário não encontrado!")
         return
+
+    numero_conta = random.randint(1000, 9999)
+    contas.append({"cpf": cpf, "numero_conta": numero_conta})
+    print(f"Conta criada com sucesso! Seu número de conta é: {numero_conta}")
+
+def listar_contas(contas):
+    if not contas:
+        print("Nenhuma conta encontrada.")
+        return
+
+    print("Contas bancárias: ")
+    for conta in contas:
+        print(f"CPF: {conta['cpf']}, Número da Conta: {conta['numero_conta']}")
     
 def depositar(saldo, numero_deposito):
     saldo += dvalor
@@ -72,6 +83,8 @@ while True:
         criar_usuario(usuarios)
     elif i == 'nc':
         criar_conta(usuarios, contas)
+    elif i == 'lc':
+        listar_contas(contas)
     elif i == "1":
         dvalor = float(input("Quanto você deseja depositar? "))
         saldo, numero_deposito = depositar(saldo, numero_deposito)
