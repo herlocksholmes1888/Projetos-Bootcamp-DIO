@@ -1,16 +1,10 @@
-"""
-    IMPLEMENTAÇÕES FUTURAS:
-        1. Associar uma quantidade de dinheiro x a uma conta y
-        2. Não tornar possível nem depósito e nem saque sem que esteja associado a uma conta
-        3. Não tornar possível o acesso a uma conta sem uma senha
-"""
-
 import random
 
 menu = """
 [nu] Novo usuário
 [nc] Nova conta
 [lc] Listar contas
+[ec] Entrar na conta
 [1] Depositar
 [2] Sacar
 [3] Visualizar extrato
@@ -20,9 +14,9 @@ menu = """
 saldo = 0
 numero_saque = 0
 numero_deposito = 0
-extrato = ""
 usuarios = []
 contas = []
+conta_logada = False
 
 def filtrar_usuario(cpf, usuarios):
     usuarios_filtrados = [usuario for usuario in usuarios if usuario["cpf"] == cpf]
@@ -49,10 +43,27 @@ def criar_conta(usuarios, contas):
     if not usuario:
         print("Usuário não encontrado!")
         return
+    
+    senha = input("Informe sua senha: ")
 
     numero_conta = random.randint(1000, 9999)
-    contas.append({"cpf": cpf, "numero_conta": numero_conta})
+    numero_conta = str(numero_conta)
+    contas.append({"cpf": cpf, "numero_conta": numero_conta, "senha_conta": senha})
     print(f"Conta criada com sucesso! Seu número de conta é: {numero_conta}")
+
+def entrar_conta(contas):
+    global conta_logada
+    numero_conta = input("Informe o número da conta: ")
+    senha = input("Informe a senha da conta: ")
+
+    for conta in contas:
+        if conta["numero_conta"] == numero_conta and conta["senha_conta"] == senha:
+            conta_logada = True
+            print("Login bem-sucedido!")
+            return conta
+
+    print("Número da conta ou senha incorretos.")
+    return None
 
 def listar_contas(contas):
     if not contas:
@@ -62,16 +73,24 @@ def listar_contas(contas):
     print("Contas bancárias: ")
     for conta in contas:
         print(f"CPF: {conta['cpf']}, Número da Conta: {conta['numero_conta']}")
-    
-def depositar(saldo, numero_deposito):
+
+def depositar(saldo, numero_deposito, conta_logada):
+    if conta_logada is False:
+        print("Faça login em uma conta antes de fazer um depósito.")
+        return saldo, numero_deposito
+
     saldo += dvalor
     numero_deposito += 1
     print("Valor depositado com sucesso!")
     return saldo, numero_deposito
 
-def sacar(saldo, numero_saque):
+def sacar(saldo, numero_saque, conta_logada):
     LIMITE_SAQUE = 500
     LIMITE_DIARIO = 3
+    if conta_logada is False:
+        print("Faça login em uma conta antes de fazer um saque.")
+        return saldo, numero_saque
+    
     if saldo < svalor:
         print("Operação inválida. Não há dinheiro o suficiente na conta.")
     else: 
@@ -92,14 +111,25 @@ while True:
         criar_conta(usuarios, contas)
     elif i == 'lc':
         listar_contas(contas)
+    elif i == 'ec':
+        entrar_conta(contas)
     elif i == "1":
-        dvalor = float(input("Quanto você deseja depositar? "))
-        saldo, numero_deposito = depositar(saldo, numero_deposito)
+        if conta_logada:
+            dvalor = float(input("Quanto você deseja depositar? "))
+            saldo, numero_deposito = depositar(saldo, numero_deposito, conta_logada)
+        else:
+            print("Faça login antes de fazer um depósito.")
     elif i == "2":
-        svalor = float(input("Quanto você deseja sacar? "))
-        saldo, numero_saque = sacar(saldo, numero_saque)
+        if conta_logada: 
+            svalor = float(input("Quanto você deseja sacar? "))
+            saldo, numero_saque = sacar(saldo, numero_saque, conta_logada)
+        else: 
+            print("Faça login antes de fazer um saque.")
     elif i == "3":
-        print(f"O seu saldo atual é de R$ {saldo}. Você realizou {numero_deposito} depósitos e {numero_saque} saques.")
+        if conta_logada:
+            print(f"O seu saldo atual é de R$ {saldo}. Você realizou {numero_deposito} depósitos e {numero_saque} saques.")
+        else:
+            print("Faça login antes de ver seu extrato.")
     elif i == "4":
         break
     else:
