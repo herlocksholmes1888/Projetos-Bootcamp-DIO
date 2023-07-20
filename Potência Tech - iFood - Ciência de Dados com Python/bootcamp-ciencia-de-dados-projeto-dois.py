@@ -1,3 +1,11 @@
+"""
+    IMPLEMENTAÇÕES FUTURAS:
+
+    1. Associar uma quantidade de dinheiro a uma conta específica, ao invés de agir como se todos os depósitos e saques fossem feitos pelo coletivo
+    2. Forçar o usuário a escrever exclusivamente números ou símbolos alfanuméricos em determinados campos
+    3. Proporcionar um padrão de escrita para cada um dos campos
+"""
+
 import random
 
 menu = """
